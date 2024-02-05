@@ -3,64 +3,56 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
 
-class ProductController extends Controller
+class CategoryController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        $categories = Category::all();
         return response()->json([
             'status' => 200,
-            'products' => $products
+            'categories' => $categories
         ], 200);
     }
 
     public function show($id)
     {
-        $product = Product::find($id);
-        if($product){
+        $categories = Category::find($id);
+        if($categories){
             return response()->json([
-                'product' => $product
+                'category' => $categories
             ], 200);
         }else{
             return response()->json([
-                'message' => "No Such product Found!"
+                'message' => "No such category Found!"
             ], 404);
         }
-    }
 
+    }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|numeric',
-            'slug' => 'required|string|max:191',
             'name' => 'required|string|max:191',
             'description' => 'required|string|max:491',
-            'price' => 'required|numeric',
-            'category_id' => 'required|numeric'
         ]);
         if($validator->fails()){
             return response()->json([
                 'error' => $validator->messages()
             ], 422);
         }else{
-            $product = Product::create([
-                'user_id' => $request->user_id,
-                'slug' => $request->slug,
+            $category = Category::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'price' => $request->price,
-                'category_id'=> $request->category_id
             ]);
 
-            if($product){
+            if($category){
                 return response()->json([
-                    'message' => "Product Created Successfully",
-                    'product' => $product
+                    'message' => "Category Created Successfully",
+                    'category' => $category
                 ], 200);
             }else{
                 return response()->json([
@@ -70,53 +62,57 @@ class ProductController extends Controller
         }
     }
 
-
-    public function edit($id)
+    public function destroy($id)
     {
-        $product = Product::find($id);
-        if($product){
+        $category = Category::find($id);
+        if($category){
+            $category->delete();
             return response()->json([
-                'product' => $product
+                'message' => "Category Deleted Successfully",
             ], 200);
         }else{
             return response()->json([
-                'message' => "No Such product Found!"
+                'message' => "No such category Found!"
             ], 404);
         }
     }
 
+    public function edit($id)
+    {
+        $category = Category::find($id);
+        if($category){
+            return response()->json([
+                'category' => $category
+            ], 200);
+        }else{
+            return response()->json([
+                'message' => "No Such category Found!"
+            ], 404);
+        }
+    }
 
     public function update(Request $request, int $id)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|numeric',
-            'slug' => 'required|string|max:191',
             'name' => 'required|string|max:191',
-            'description' => 'required|string|max:491',
-            'price' =>'required|numeric',
-            'category_id' => 'required|numeric'
+            'description' => 'required|string|max:491'
         ]);
         if($validator->fails()){
             return response()->json([
                 'error' => $validator->messages()
             ], 422);
         }else{
-            $product = Product::find($id);
+            $category = Category::find($id);
 
-            if($product){
-
-                $product->update([
-                    'user_id' => $request->user_id,
-                    'slug' => $request->slug,
+            if($category){
+                $category->update([
                     'name' => $request->name,
                     'description' => $request->description,
-                    'price' => $request->price,
-                    'category_id'=> $request->category_id
                 ]);
 
                 return response()->json([
                     'message' => "Product Updated Successfully",
-                    'product' => $product
+                    'category' => $category
                 ], 200);
             }else{
                 return response()->json([
@@ -126,21 +122,5 @@ class ProductController extends Controller
         }
     }
 
-    public function destroy($id)
-    {
-        $product = Product::find($id);
-        if($product){
-            $product->delete();
-            return response()->json([
-                'message' => "Product Deleted Successfully",
-            ], 200);
-        }else{
-            return response()->json([
-                'message' => "No such product Found!"
-            ], 404);
-        }
-    }
 
 }
-
-

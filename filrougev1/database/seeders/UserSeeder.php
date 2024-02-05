@@ -36,6 +36,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('jojo'),
             'user_groupe_id' => 3,
         ]);
-
     }
 }
+
